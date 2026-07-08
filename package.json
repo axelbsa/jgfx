@@ -1,0 +1,10 @@
+{
+  "name": "jgfx",
+  "version": "0.1.0",
+  "description": "A JavaScript/WebGPU port of cgfx",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}

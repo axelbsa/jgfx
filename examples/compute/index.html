@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>jgfx — compute</title>
+  <style>
+    html, body { margin: 0; min-height: 100%; background: #14141c; color: #e6e6ef; }
+    body { font: 15px/1.6 system-ui, sans-serif; padding: 2.5rem 1.5rem; }
+    .wrap { max-width: 700px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; margin: 0 0 .25rem; }
+    h1 .accent { color: #cc66ff; }
+    p.sub { color: #7a7a8c; margin: 0 0 1.5rem; }
+    pre {
+      background: #1e1e2a; border: 1px solid #2c2c3c; border-radius: 8px;
+      padding: 1rem 1.2rem; overflow-x: auto; font-size: 13px; white-space: pre-wrap;
+    }
+    .ok { color: #4ade80; }
+    .bad { color: #ffb4b4; }
+    canvas { display: none; }
+    #err { color: #ffb4b4; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1><span class="accent">jgfx</span> — compute</h1>
+    <p class="sub">GPU vector addition with storage buffers + async read-back.</p>
+    <canvas id="gfx" width="1" height="1"></canvas>
+    <pre id="out">Running…</pre>
+    <div id="err"></div>
+  </div>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

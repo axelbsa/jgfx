@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>jgfx — playing_with_buffers</title>
+  <style>
+    body {
+      margin: 0; min-height: 100vh; background: #14141c; color: #e6e6ef;
+      font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.2rem; }
+    pre { background: #1e1e2a; border: 1px solid #2c2c3c; border-radius: 8px; padding: 1rem; white-space: pre-wrap; }
+    .ok { color: #4ade80; }
+    .bad { color: #ffb4b4; }
+  </style>
+</head>
+<body>
+  <h1>playing_with_buffers</h1>
+  <p>Create a storage buffer, copy it into a mapping buffer on the GPU, then map-read it back.</p>
+  <pre id="out">running…</pre>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

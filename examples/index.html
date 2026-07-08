@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>jgfx — examples</title>
+  <style>
+    :root {
+      --bg: #14141c;
+      --fg: #e6e6ef;
+      --muted: #7a7a8c;
+      --card: #1e1e2a;
+      --card-hover: #26263a;
+      --accent: #cc66ff;
+      --border: #2c2c3c;
+      --ok: #4ade80;
+      --soon: #7a7a8c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 2rem; margin: 0 0 .25rem; }
+    h1 .accent { color: var(--accent); }
+    .tagline { color: var(--muted); margin: 0 0 2rem; }
+    #gpu-warn {
+      display: none;
+      background: #3a1a1a;
+      border: 1px solid #5a2a2a;
+      color: #ffb4b4;
+      padding: .9rem 1.1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    h2 {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin: 2rem 0 .75rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .4rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: .75rem;
+    }
+    a.card, div.card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      text-decoration: none;
+      color: var(--fg);
+      transition: background .12s, border-color .12s;
+    }
+    a.card:hover { background: var(--card-hover); border-color: var(--accent); }
+    .card .name { font-weight: 600; }
+    .card .desc { color: var(--muted); font-size: .82rem; margin-top: .2rem; }
+    .card.soon { opacity: .5; cursor: default; }
+    .tag {
+      float: right;
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: .1rem .4rem;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+    }
+    .tag.ok { color: var(--ok); }
+    .tag.soon { color: var(--soon); }
+    footer { color: var(--muted); margin-top: 3rem; font-size: .82rem; }
+    code { background: #000; padding: .1rem .35rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1><span class="accent">jgfx</span> — examples</h1>
+    <p class="tagline">A JavaScript / WebGPU port of cgfx. Each example mirrors its cgfx twin.</p>
+
+    <div id="gpu-warn">
+      <strong>WebGPU is not available in this browser.</strong>
+      Use a recent Chromium-based browser (or enable WebGPU) and serve this page over
+      <code>http://localhost</code>.
+    </div>
+
+    <div id="sections"></div>
+
+    <footer>
+      Serve from the repo root, e.g. <code>python3 -m http.server</code> or
+      <code>npx serve</code>, then open <code>/examples/</code>.
+      See the <a href="../docs/index.md">documentation</a> for guides and the API
+      reference, and <code>PLAN.md</code> for the roadmap.
+      <br />
+      Single-file build: <code>node build.mjs</code> → <code>dist/</code>
+      (verify with <a href="../dist/smoke.html">dist/smoke.html</a>).
+    </footer>
+  </div>
+
+  <script type="module">
+    // Registry of every planned example, grouped by phase. Set `ready: true`
+    // as each example lands so it becomes a live link.
+    const SECTIONS = [
+      {
+        phase: "Phase 1 — Core render path",
+        items: [
+          { dir: "triangle", name: "triangle", desc: "Purple triangle, inline WGSL, no buffers.", ready: true },
+          { dir: "vertex_attribute", name: "vertex_attribute", desc: "Vertices from a GPU buffer + layout.", ready: true },
+        ],
+      },
+      {
+        phase: "Phase 2 — Buffers, uniforms, bind groups",
+        items: [
+          { dir: "multiple_uniforms", name: "multiple_uniforms", desc: "Two objects, one shader, per-object uniforms.", ready: true },
+          { dir: "playing_with_buffers", name: "playing_with_buffers", desc: "Buffer copy + async map-read.", ready: true },
+        ],
+      },
+      {
+        phase: "Phase 3 — Mesh, math, camera",
+        items: [
+          { dir: "primitives", name: "primitives", desc: "Procedural cube / plane / sphere with a camera.", ready: true },
+          { dir: "projection_matrices", name: "projection_matrices", desc: "Perspective projection + view matrix.", ready: true },
+          { dir: "depth_texture", name: "depth_texture", desc: "Scene depth as grayscale (near bright, far dark).", ready: true },
+          { dir: "instanced_rendering", name: "instanced_rendering", desc: "Many cubes in one instanced draw.", ready: true },
+        ],
+      },
+      {
+        phase: "Phase 4 — Textures & samplers",
+        items: [
+          { dir: "software_framebuffer", name: "software_framebuffer", desc: "CPU pixel plotting uploaded to a texture.", ready: true },
+          { dir: "textured_quad", name: "textured_quad", desc: "Sampled texture on a quad.", ready: true },
+        ],
+      },
+      {
+        phase: "Phase 5 — Compute, MRT, advanced frame",
+        items: [
+          { dir: "compute", name: "compute", desc: "Storage buffers + async readback.", ready: true },
+          { dir: "compute_texture", name: "compute_texture", desc: "Compute-to-texture Julia set.", ready: true },
+          { dir: "mrt", name: "mrt", desc: "Multiple render targets in one pass.", ready: true },
+        ],
+      },
+      {
+        phase: "Phase 6 — Loader",
+        items: [
+          { dir: "loading_from_file", name: "loading_from_file", desc: "Fetch WGSL + load a mesh from disk.", ready: true },
+        ],
+      },
+    ];
+
+    const root = document.getElementById("sections");
+    for (const section of SECTIONS) {
+      const h = document.createElement("h2");
+      h.textContent = section.phase;
+      root.appendChild(h);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      for (const item of section.items) {
+        const tag = item.ready
+          ? '<span class="tag ok">ready</span>'
+          : '<span class="tag soon">soon</span>';
+        const inner =
+          `<div class="name">${item.name}${tag}</div>` +
+          `<div class="desc">${item.desc}</div>`;
+        let el;
+        if (item.ready) {
+          el = document.createElement("a");
+          el.className = "card";
+          el.href = `./${item.dir}/`;
+        } else {
+          el = document.createElement("div");
+          el.className = "card soon";
+        }
+        el.innerHTML = inner;
+        grid.appendChild(el);
+      }
+      root.appendChild(grid);
+    }
+
+    if (!navigator.gpu) {
+      document.getElementById("gpu-warn").style.display = "block";
+    }
+  </script>
+</body>
+</html>

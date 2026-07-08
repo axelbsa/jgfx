@@ -1,0 +1,88 @@
+site_name: jgfx
+site_description: "A browser JavaScript / WebGPU port of cgfx"
+repo_url: https://github.com/axelbsa/jgfx
+repo_name: axelbsa/jgfx
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.tabs.link
+    - search.suggest
+    - search.highlight
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Running & Bundling: building.md
+  - Architecture: architecture.md
+  - Guides:
+    - Procedural Geometry: guides/procedural-geometry.md
+    - Using Math & Transforms: guides/math-and-transforms.md
+    - Buffers, Layouts & Pipeline: guides/buffers-layouts-pipeline.md
+    - Shader & Bind Group Architecture: guides/shader-bind-groups.md
+    - Compute Pipeline & Render-to-Texture: guides/compute-pipeline.md
+  - API Reference:
+    - Overview: api/index.md
+    - Context: api/context.md
+    - Shader: api/shader.md
+    - Pipeline: api/pipeline.md
+    - Frame: api/frame.md
+    - Buffer: api/buffer.md
+    - Uniform: api/uniform.md
+    - Mesh: api/mesh.md
+    - Texture: api/texture.md
+    - Compute: api/compute.md
+    - Camera: api/camera.md
+    - Geometry: api/geometry.md
+    - Math: api/math.md
+    - Easing: api/easing.md
+    - Loader: api/loader.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
