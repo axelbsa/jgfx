@@ -1709,11 +1709,6 @@ passed in. When the data isn't a multiple of 4, it is padded with zeros before u
 <td><code>number</code></td>
 <td>Number of elements (vertices, indices, or other). <code>0</code> if unset.</td>
 </tr>
-<tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> if creation succeeded — check before use.</td>
-</tr>
 </tbody>
 </table>
 <hr />
@@ -2027,7 +2022,7 @@ records the copy, and submits it on the queue.</p>
 <hr />
 <h3 id="destroy">destroy<a class="headerlink" href="#destroy" title="Permanent link">&para;</a></h3>
 <p>Releases the GPU buffer and clears the object's fields (<code>buffer</code> becomes <code>null</code>, <code>size</code> and
-<code>count</code> become <code>0</code>, <code>ok</code> becomes <code>false</code>). Don't use the buffer after this.</p>
+Don't use the buffer after this.</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nx">buf</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>
 <div class="admonition warning">

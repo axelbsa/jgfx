@@ -1547,18 +1547,22 @@ Omitted fields (<code>undefined</code>) resolve to documented values during crea
 <p>Unlike cgfx (where <code>limits</code> must be initialized with <code>cgfx_default_limits()</code>), jgfx's
 <code>requiredLimits</code> defaults to <code>{}</code> — "no preference" — which is already the right default.</p>
 <h2 id="error-handling">Error handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
-<p>jgfx uses two mechanisms:</p>
+<p>jgfx throws a single error type, <code>JgfxError</code>, for everything it detects itself:
+programmer/setup mistakes (missing <code>canvas</code>, no WebGPU support, a failed <code>fetch</code>, a bind
+group index out of range) <strong>and</strong> WGSL↔descriptor mismatches found by the built-in
+validator (see <a href="shader/">Shader</a>). Wrap <code>main()</code> in a <code>try/catch</code> (the examples do) to
+surface these on the page. There are no <code>.ok</code> status fields — cgfx needs them because C
+has no exceptions; in JS they proved racy and easy to ignore.</p>
+<p>Two things are <em>not</em> exceptions by design:</p>
 <ul>
-<li><strong>Thrown <code>Error</code>s</strong> for programmer/setup mistakes that should stop you immediately —
-  missing <code>canvas</code>, no WebGPU support, a failed <code>fetch</code>, a bind group index out of range.
-  Wrap <code>main()</code> in a <code>try/catch</code> (the examples do) to surface these on the page.</li>
-<li><strong><code>.ok</code> fields</strong> on objects that bundle GPU resources (<code>Buffer</code>, <code>Uniform</code>, <code>Mesh</code>,
-  <code>Texture</code>, <code>Shader</code>) — a quick success flag, mirroring cgfx's <code>bool</code> returns.</li>
+<li><code>ctx.beginFrame()</code> returns <code>null</code> when the surface is briefly unavailable — skip the
+  frame, don't treat it as an error.</li>
+<li>WGSL <em>compile</em> errors arrive asynchronously; call <code>await shader.validate()</code> to turn
+  them into a thrown <code>JgfxError</code> with <code>label:line:col</code> positions.</li>
 </ul>
 <p>Device-level problems surface through callbacks registered at <code>Context.create</code>: an
 <code>uncapturederror</code> handler and <code>device.lost</code>, both defaulting to <code>console.error</code> (override
-with <code>onDeviceError</code> / <code>onDeviceLost</code>). WGSL compile errors are logged automatically via
-<code>getCompilationInfo()</code>.</p>
+with <code>onDeviceError</code> / <code>onDeviceLost</code>).</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">try</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">Context</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">canvas</span><span class="w"> </span><span class="p">});</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>

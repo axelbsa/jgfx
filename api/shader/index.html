@@ -1779,12 +1779,22 @@ pipeline will then use WebGPU's automatic layout).</p>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">});</span>
 </span></code></pre></div>
 <div class="admonition note">
-<p class="admonition-title">Compile diagnostics are logged automatically</p>
-<p>The constructor kicks off <code>module.getCompilationInfo()</code> in the background and
-logs any WGSL warnings via <code>console.warn</code> and errors via <code>console.error</code>,
-each formatted as <code>[jgfx_shader] &lt;type&gt; at &lt;label&gt;:&lt;line&gt;:&lt;col&gt;: &lt;message&gt;</code>.
-On an error it also flips <code>shader.ok</code> to <code>false</code>. Because this is
-asynchronous, <code>ok</code> may briefly read <code>true</code> before diagnostics arrive.</p>
+<p class="admonition-title">The descriptor is checked against your WGSL</p>
+<p>The constructor parses the WGSL and compares it with the <code>groups</code> descriptor:
+missing or mistyped bindings, undersized <code>minBindingSize</code> (with the computed
+struct layout shown field by field), wrong storage-texture formats, and
+visibility that excludes a referencing stage. Mismatches <strong>throw a
+<code>JgfxError</code></strong> at the call site by default; pass
+<code>Context.create({ validation: "warn" })</code> to log-and-continue instead, or
+<code>"off"</code> to skip the check. The descriptor stays authoritative — jgfx never
+generates layouts from the WGSL.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Await <code>shader.validate()</code> for compile errors</p>
+<p>WGSL <em>compile</em> results arrive asynchronously from the browser. Call
+<code>await shader.validate()</code> after creating a shader you are actively editing:
+it resolves when the module compiled cleanly and throws a <code>JgfxError</code>
+listing every error as <code>label:line:col</code> otherwise.</p>
 </div>
 <hr />
 <h3 id="ctxcreateshaderfromfile">ctx.createShaderFromFile<a class="headerlink" href="#ctxcreateshaderfromfile" title="Permanent link">&para;</a></h3>
@@ -2017,9 +2027,9 @@ binding's <code>kind</code> are read; the rest fall back to per-kind defaults.</
 <td>Built from <code>groupLayouts</code>. <code>null</code> when no descriptor was provided (automatic layout).</td>
 </tr>
 <tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> unless WGSL compilation reported an error.</td>
+<td><code>diagnostics</code></td>
+<td><code>object[]</code></td>
+<td>Validator findings from construction time (empty when <code>validation: "off"</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -2186,7 +2196,7 @@ passes.</p>
 <h2 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h2>
 <h3 id="shaderdestroy">shader.destroy<a class="headerlink" href="#shaderdestroy" title="Permanent link">&para;</a></h3>
 <p>Release the shader's references. The GPU objects are garbage-collected, so this
-mainly clears fields and flips <code>ok</code> to <code>false</code>.</p>
+mainly clears fields.</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">shader</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>
 <div class="admonition warning">

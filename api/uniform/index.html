@@ -1540,11 +1540,6 @@ pointer — jgfx holds a reference to your array rather than copying it.</p>
 <td><code>GPUBindGroup</code></td>
 <td>Bind group referencing this buffer, for the given <code>@group</code>.</td>
 </tr>
-<tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> if both the buffer and bind group were created — check before use.</td>
-</tr>
 </tbody>
 </table>
 <hr />
@@ -1602,7 +1597,7 @@ frame after modifying your array.</p>
 <hr />
 <h3 id="destroy">destroy<a class="headerlink" href="#destroy" title="Permanent link">&para;</a></h3>
 <p>Releases the underlying buffer <strong>and</strong> the bind group, and clears the object's fields
-(<code>bindGroup</code> and <code>data</code> become <code>null</code>, <code>ok</code> becomes <code>false</code>). Unlike your data array — which
+(<code>bindGroup</code> and <code>data</code> become <code>null</code>). Unlike your data array — which
 jgfx never owns — the bind group is created by <code>Uniform</code>, so it is released here.</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">uniform</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>

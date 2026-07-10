@@ -1695,7 +1695,7 @@ GPU.</p>
 </tbody>
 </table>
 <p>The aspect ratio is computed automatically from <code>ctx.width / ctx.height</code>.</p>
-<p><strong>Returns</strong> a <code>Camera</code>. Check <a href="#public-fields"><code>camera.ok</code></a> before use; free it with
+<p><strong>Returns</strong> a <code>Camera</code>. Creation failures throw a <code>JgfxError</code>; free the camera with
 <a href="#cameradestroy"><code>camera.destroy()</code></a>.</p>
 <hr />
 <h2 id="public-fields">Public fields<a class="headerlink" href="#public-fields" title="Permanent link">&para;</a></h2>
@@ -1722,11 +1722,6 @@ GPU.</p>
 <td><code>buffer</code></td>
 <td><a href="../buffer/"><code>Buffer</code></a></td>
 <td>GPU uniform buffer (128 bytes). Pass to <code>shader.createBindGroupBuffers</code>.</td>
-</tr>
-<tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> if the buffer was created successfully. Check before use.</td>
 </tr>
 </tbody>
 </table>
@@ -1858,7 +1853,7 @@ the matrices via <a href="#cameraperspective"><code>perspective</code></a> / <a 
 <hr />
 <h3 id="cameradestroy">camera.destroy<a class="headerlink" href="#cameradestroy" title="Permanent link">&para;</a></h3>
 <p>Release the GPU uniform buffer. After this the camera must not be used (<code>buffer</code>
-becomes <code>null</code> and <code>ok</code> becomes <code>false</code>).</p>
+becomes <code>null</code>).</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">camera</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>
 <hr />

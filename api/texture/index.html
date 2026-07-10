@@ -1572,7 +1572,7 @@ it directly.</p>
 <p>A GPU texture with its default view. Create it with <code>ctx.createTexture(desc)</code> or
 <code>new Texture(ctx, desc)</code> — the context method is just a thin wrapper.</p>
 <h3 id="public-fields">Public fields<a class="headerlink" href="#public-fields" title="Permanent link">&para;</a></h3>
-<p>All fields are public. Check <code>ok</code> before use.</p>
+<p>All fields are public.</p>
 <table>
 <thead>
 <tr>
@@ -1616,11 +1616,6 @@ it directly.</p>
 <td><code>mipLevels</code></td>
 <td><code>number</code></td>
 <td>Number of mip levels.</td>
-</tr>
-<tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> if creation succeeded.</td>
 </tr>
 </tbody>
 </table>
@@ -1813,7 +1808,7 @@ For compressed or exotic formats, sub-regions, or non-zero mip levels, call
 <p>Release the texture and its view.</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nx">tex</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>
-<p>Sets <code>view</code> and <code>texture</code> to <code>null</code> and <code>ok</code> to <code>false</code>. The <code>GPUTexture</code> itself is
+<p>Sets <code>view</code> and <code>texture</code> to <code>null</code>. The <code>GPUTexture</code> itself is
 destroyed; the view is dropped for the garbage collector.</p>
 <hr />
 <h2 id="createsampler">createSampler<a class="headerlink" href="#createsampler" title="Permanent link">&para;</a></h2>

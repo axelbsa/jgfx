@@ -1857,7 +1857,7 @@ Otherwise the buffer is uploaded as-is; the vertex count is inferred as
 <p>A vertex object may carry any subset of the standard fields:</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="w"> </span><span class="nx">position</span><span class="p">,</span><span class="w"> </span><span class="nx">normal</span><span class="p">,</span><span class="w"> </span><span class="nx">tangent</span><span class="p">,</span><span class="w"> </span><span class="nx">texcoord0</span><span class="p">,</span><span class="w"> </span><span class="nx">texcoord1</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="p">,</span><span class="w"> </span><span class="nx">joints</span><span class="p">,</span><span class="w"> </span><span class="nx">weights</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
-<p><strong>Returns</strong> a <code>Mesh</code>. Check <a href="#public-fields"><code>mesh.ok</code></a> before use; free it with
+<p><strong>Returns</strong> a <code>Mesh</code>. Creation failures throw a <code>JgfxError</code>; free the mesh with
 <a href="#meshdestroy"><code>mesh.destroy()</code></a>.</p>
 <hr />
 <h2 id="public-fields">Public fields<a class="headerlink" href="#public-fields" title="Permanent link">&para;</a></h2>
@@ -1884,11 +1884,6 @@ Otherwise the buffer is uploaded as-is; the vertex count is inferred as
 <td><code>indexCount</code></td>
 <td><code>number</code></td>
 <td>Number of indices (= number of draw elements).</td>
-</tr>
-<tr>
-<td><code>ok</code></td>
-<td><code>boolean</code></td>
-<td><code>true</code> if both buffers were created successfully. Check before use.</td>
 </tr>
 </tbody>
 </table>
@@ -2015,7 +2010,7 @@ collide with the standard vertex's 0–7 (the example below starts at 8).</p>
 <hr />
 <h3 id="meshdestroy">mesh.destroy<a class="headerlink" href="#meshdestroy" title="Permanent link">&para;</a></h3>
 <p>Release both GPU buffers. After this the mesh must not be used (<code>indexCount</code>
-resets to 0 and <code>ok</code> becomes <code>false</code>).</p>
+are released).</p>
 <div class="language-js highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nx">mesh</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
 </span></code></pre></div>
 <hr />
