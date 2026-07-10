@@ -23,6 +23,7 @@
  */
 
 import { Mesh } from "./mesh.js";
+import { JgfxError } from "./errors.js";
 
 /**
  * Parse the text format into raw geometry (= cgfx_load_geometry, but pure and
@@ -91,7 +92,7 @@ export function parseGeometry(text) {
 export async function loadGeometry(url) {
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(`[jgfx] failed to fetch geometry '${url}': ${res.status}`);
+    throw new JgfxError(`failed to fetch geometry '${url}': ${res.status}`);
   }
   return parseGeometry(await res.text());
 }

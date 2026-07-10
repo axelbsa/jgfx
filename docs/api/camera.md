@@ -52,7 +52,7 @@ const camera = ctx.createCamera({
 
 The aspect ratio is computed automatically from `ctx.width / ctx.height`.
 
-**Returns** a `Camera`. Check [`camera.ok`](#public-fields) before use; free it with
+**Returns** a `Camera`. Creation failures throw a `JgfxError`; free the camera with
 [`camera.destroy()`](#cameradestroy).
 
 ---
@@ -64,7 +64,6 @@ The aspect ratio is computed automatically from `ctx.width / ctx.height`.
 | `projection` | `Float32Array` | The projection matrix (16 floats, column-major). A subarray view into the uploaded block. |
 | `view` | `Float32Array` | The view matrix (16 floats, column-major). A subarray view into the uploaded block. |
 | `buffer` | [`Buffer`](buffer.md) | GPU uniform buffer (128 bytes). Pass to `shader.createBindGroupBuffers`. |
-| `ok` | `boolean` | `true` if the buffer was created successfully. Check before use. |
 
 !!! tip "In-place matrix edits"
     `projection` and `view` are live subarrays of the camera's upload block, so the
@@ -144,7 +143,7 @@ This is a thin convenience over `pass.setBindGroup(groupIndex, bindGroup)`.
 ### camera.destroy
 
 Release the GPU uniform buffer. After this the camera must not be used (`buffer`
-becomes `null` and `ok` becomes `false`).
+becomes `null`).
 
 ```js
 camera.destroy();

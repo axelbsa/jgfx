@@ -47,7 +47,6 @@ export class Camera {
     this.view.set(mat4.lookAt(eye, center, up));
 
     this.buffer = Buffer.uniform(ctx, this._gpu);
-    this.ok = this.buffer.ok;
   }
 
   /** Recompute the projection matrix. fovyDeg is in degrees. */
@@ -76,6 +75,5 @@ export class Camera {
   destroy() {
     this.buffer?.destroy();
     this.buffer = null;
-    this.ok = false;
   }
 }

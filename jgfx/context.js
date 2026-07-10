@@ -9,6 +9,7 @@
  */
 
 import { Defaults } from "./constants.js";
+import { JgfxError } from "./errors.js";
 import { Shader } from "./shader.js";
 import { createPipeline } from "./pipeline.js";
 import { Buffer } from "./buffer.js";
@@ -122,6 +123,8 @@ export class Context {
     this.width = 0;
     this.height = 0;
     this._depthFormat = Defaults.DEPTH_FORMAT;
+    /** @type {'error'|'warn'|'off'} WGSL↔descriptor validation mode */
+    this.validation = "error";
   }
 
   /**
@@ -135,19 +138,23 @@ export class Context {
    * @param {object}  [desc.requiredLimits={}]
    * @param {GPUFeatureName[]} [desc.requiredFeatures=[]]
    * @param {GPUPowerPreference} [desc.powerPreference='high-performance']
+   * @param {'error'|'warn'|'off'} [desc.validation='error']  WGSL↔descriptor
+   *        mismatch handling: 'error' throws at createShader, 'warn' logs and
+   *        continues (cgfx-style), 'off' skips the check entirely
    * @param {(error:GPUError)=>void} [desc.onDeviceError]
    * @param {(info:GPUDeviceLostInfo)=>void} [desc.onDeviceLost]
    * @returns {Promise<Context>}
    */
   static async create(desc) {
     if (!desc || !desc.canvas) {
-      throw new Error("[jgfx] Context.create: desc.canvas is required");
+      throw new JgfxError("Context.create: desc.canvas is required");
     }
     if (!navigator.gpu) {
-      throw new Error("[jgfx] WebGPU is not available in this browser");
+      throw new JgfxError("WebGPU is not available in this browser");
     }
 
     const ctx = new Context();
+    ctx.validation = desc.validation ?? "error";
     ctx.canvas = desc.canvas;
     ctx.width = desc.width ?? desc.canvas.width ?? Defaults.WIDTH;
     ctx.height = desc.height ?? desc.canvas.height ?? Defaults.HEIGHT;
@@ -157,21 +164,28 @@ export class Context {
     const adapter = await navigator.gpu.requestAdapter({
       powerPreference: desc.powerPreference ?? Defaults.POWER_PREFERENCE,
     });
-    if (!adapter) throw new Error("[jgfx] Failed to obtain a WebGPU adapter");
+    if (!adapter) throw new JgfxError("Failed to obtain a WebGPU adapter");
 
     ctx.device = await adapter.requestDevice({
       label: "jgfx device",
       requiredLimits: desc.requiredLimits ?? {},
       requiredFeatures: desc.requiredFeatures ?? [],
     });
-    if (!ctx.device) throw new Error("[jgfx] Failed to obtain a WebGPU device");
+    if (!ctx.device) throw new JgfxError("Failed to obtain a WebGPU device");
 
     // Device error / lost callbacks (= cgfx device error/lost callbacks).
     const onError = desc.onDeviceError
       ?? ((e) => console.error(`[jgfx] uncaptured device error: ${e.message}`));
     ctx.device.addEventListener("uncapturederror", (ev) => onError(ev.error));
     const onLost = desc.onDeviceLost
-      ?? ((info) => console.error(`[jgfx] device lost (${info.reason}): ${info.message}`));
+      ?? ((info) => {
+        // reason "destroyed" means ctx.destroy() was called — not an error.
+        if (info.reason === "destroyed") {
+          console.info(`[jgfx] device destroyed: ${info.message}`);
+          return;
+        }
+        console.error(`[jgfx] device lost (${info.reason}): ${info.message}`);
+      });
     ctx.device.lost.then(onLost);
 
     ctx.queue = ctx.device.queue;

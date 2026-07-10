@@ -53,14 +53,11 @@ export class Mesh {
     const packed = Array.isArray(vertices)
       ? Mesh.packVertices(vertices)
       : vertices;
-    const bytes =
-      packed instanceof ArrayBuffer ? packed.byteLength : packed.byteLength;
-    const vertexCount = bytes / VERTEX_SIZE;
+    const vertexCount = packed.byteLength / VERTEX_SIZE;
 
     this.vertexBuffer = Buffer.vertex(ctx, packed, vertexCount);
     this.indexBuffer = Buffer.index(ctx, indices);
     this.indexCount = this.indexBuffer.count;
-    this.ok = this.vertexBuffer.ok && this.indexBuffer.ok;
   }
 
   /**
@@ -124,7 +121,5 @@ export class Mesh {
   destroy() {
     this.vertexBuffer?.destroy();
     this.indexBuffer?.destroy();
-    this.indexCount = 0;
-    this.ok = false;
   }
 }

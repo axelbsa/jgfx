@@ -89,7 +89,7 @@ A vertex object may carry any subset of the standard fields:
 { position, normal, tangent, texcoord0, texcoord1, color, joints, weights }
 ```
 
-**Returns** a `Mesh`. Check [`mesh.ok`](#public-fields) before use; free it with
+**Returns** a `Mesh`. Creation failures throw a `JgfxError`; free the mesh with
 [`mesh.destroy()`](#meshdestroy).
 
 ---
@@ -101,7 +101,6 @@ A vertex object may carry any subset of the standard fields:
 | `vertexBuffer` | [`Buffer`](buffer.md) | GPU vertex buffer (standard-vertex array). |
 | `indexBuffer` | [`Buffer`](buffer.md) | GPU index buffer (`uint32` array). |
 | `indexCount` | `number` | Number of indices (= number of draw elements). |
-| `ok` | `boolean` | `true` if both buffers were created successfully. Check before use. |
 
 ---
 
@@ -216,7 +215,7 @@ const pipeline = ctx.createPipeline({
 ### mesh.destroy
 
 Release both GPU buffers. After this the mesh must not be used (`indexCount`
-resets to 0 and `ok` becomes `false`).
+are released).
 
 ```js
 mesh.destroy();

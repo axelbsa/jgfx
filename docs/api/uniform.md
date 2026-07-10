@@ -19,7 +19,6 @@ pointer — jgfx holds a reference to your array rather than copying it.
 | `size` | `number` | Size of the uniform data in bytes (`data.byteLength`). |
 | `buffer` | [`Buffer`](buffer.md) | The GPU uniform buffer (`UNIFORM \| COPY_DST`). |
 | `bindGroup` | `GPUBindGroup` | Bind group referencing this buffer, for the given `@group`. |
-| `ok` | `boolean` | `true` if both the buffer and bind group were created — check before use. |
 
 ---
 
@@ -71,7 +70,7 @@ uniform.write();  // then upload
 ### destroy
 
 Releases the underlying buffer **and** the bind group, and clears the object's fields
-(`bindGroup` and `data` become `null`, `ok` becomes `false`). Unlike your data array — which
+(`bindGroup` and `data` become `null`). Unlike your data array — which
 jgfx never owns — the bind group is created by `Uniform`, so it is released here.
 
 ```js

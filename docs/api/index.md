@@ -71,18 +71,23 @@ Unlike cgfx (where `limits` must be initialized with `cgfx_default_limits()`), j
 
 ## Error handling
 
-jgfx uses two mechanisms:
+jgfx throws a single error type, `JgfxError`, for everything it detects itself:
+programmer/setup mistakes (missing `canvas`, no WebGPU support, a failed `fetch`, a bind
+group index out of range) **and** WGSL↔descriptor mismatches found by the built-in
+validator (see [Shader](shader.md)). Wrap `main()` in a `try/catch` (the examples do) to
+surface these on the page. There are no `.ok` status fields — cgfx needs them because C
+has no exceptions; in JS they proved racy and easy to ignore.
 
-- **Thrown `Error`s** for programmer/setup mistakes that should stop you immediately —
-  missing `canvas`, no WebGPU support, a failed `fetch`, a bind group index out of range.
-  Wrap `main()` in a `try/catch` (the examples do) to surface these on the page.
-- **`.ok` fields** on objects that bundle GPU resources (`Buffer`, `Uniform`, `Mesh`,
-  `Texture`, `Shader`) — a quick success flag, mirroring cgfx's `bool` returns.
+Two things are *not* exceptions by design:
+
+- `ctx.beginFrame()` returns `null` when the surface is briefly unavailable — skip the
+  frame, don't treat it as an error.
+- WGSL *compile* errors arrive asynchronously; call `await shader.validate()` to turn
+  them into a thrown `JgfxError` with `label:line:col` positions.
 
 Device-level problems surface through callbacks registered at `Context.create`: an
 `uncapturederror` handler and `device.lost`, both defaulting to `console.error` (override
-with `onDeviceError` / `onDeviceLost`). WGSL compile errors are logged automatically via
-`getCompilationInfo()`.
+with `onDeviceError` / `onDeviceLost`).
 
 ```js
 try {

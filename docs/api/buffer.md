@@ -26,7 +26,6 @@ Every `Buffer` exposes:
 | `buffer` | `GPUBuffer` | The underlying WebGPU buffer handle. |
 | `size` | `number` | Allocated size in bytes (rounded up to a multiple of 4). |
 | `count` | `number` | Number of elements (vertices, indices, or other). `0` if unset. |
-| `ok` | `boolean` | `true` if creation succeeded — check before use. |
 
 ---
 
@@ -227,7 +226,7 @@ storageBuf.copy(readbackBuf); // copies min(src, dst) bytes
 ### destroy
 
 Releases the GPU buffer and clears the object's fields (`buffer` becomes `null`, `size` and
-`count` become `0`, `ok` becomes `false`). Don't use the buffer after this.
+Don't use the buffer after this.
 
 ```js
 buf.destroy();

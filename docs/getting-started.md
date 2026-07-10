@@ -120,9 +120,18 @@ shader needs. This triangle uses no uniforms, so we omit it — the resulting pi
 WebGPU's automatic layout inference (`layout: "auto"`).
 
 !!! tip "Compile diagnostics"
-    jgfx asynchronously calls `getCompilationInfo()` on every module and logs WGSL errors
-    and warnings (with line numbers) to the console. If a shader silently fails to render,
-    check the console first.
+    WGSL compile results arrive asynchronously from the browser. While iterating on a
+    shader, add one line after creating it:
+
+    ```js
+    await shader.validate();
+    ```
+
+    It resolves when the module compiled cleanly and throws a `JgfxError` listing every
+    error as `label:line:col` otherwise — so a broken shader surfaces in your `catch`
+    instead of as a silently black canvas. Separately, when you pass a bind-group
+    descriptor, `createShader` checks it against the WGSL immediately and throws on
+    mismatches (sizes, kinds, formats) with the computed layout in the message.
 
 #### What is WGSL?
 

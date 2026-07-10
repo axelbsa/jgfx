@@ -24,6 +24,7 @@
  */
 
 import { Defaults } from "./constants.js";
+import { JgfxError } from "./errors.js";
 import { bind } from "./shader.js";
 
 /**
@@ -36,7 +37,7 @@ import { bind } from "./shader.js";
  */
 export function createComputePipeline(ctx, desc) {
   if (!desc || !desc.shader) {
-    throw new Error("[jgfx] createComputePipeline: desc.shader is required");
+    throw new JgfxError("createComputePipeline: desc.shader is required");
   }
   return ctx.device.createComputePipeline({
     label: "jgfx compute pipeline",

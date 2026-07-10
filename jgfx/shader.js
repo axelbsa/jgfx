@@ -9,6 +9,8 @@
  */
 
 import { Binding } from "./constants.js";
+import { JgfxError } from "./errors.js";
+import { parse as parseWgsl, validate as validateWgsl, formatDiagnostic } from "./wgsl.js";
 
 /**
  * Map a binding kind to its default shader-stage visibility, matching cgfx:
@@ -68,7 +70,7 @@ function buildLayoutEntry(b) {
       };
       break;
     default:
-      throw new Error(`[jgfx] unknown binding kind: ${kind}`);
+      throw new JgfxError(`unknown binding kind: ${kind}`);
   }
   return entry;
 }
@@ -102,11 +104,14 @@ export class Shader {
     this.groupLayouts = [];
     /** @type {GPUPipelineLayout | null} */
     this.pipelineLayout = null;
-    this.ok = true;
 
-    // Surface WGSL compile diagnostics asynchronously (browsers implement
-    // getCompilationInfo; cgfx's wgpu-native build could not).
-    this.#reportCompilation();
+    // Check the hand-written groups descriptor against the WGSL before any
+    // layout is built, so a mismatch fails here — at this call, with the rule
+    // that was broken — rather than as a device validation error mid-frame.
+    const mode = ctx.validation ?? "error";
+    this.model = parseWgsl(wgsl);
+    this.diagnostics = mode === "off" ? [] : validateWgsl(this.model, desc?.groups);
+    this.#report(this.diagnostics, mode);
 
     const groups = desc?.groups;
     if (!groups || groups.length === 0) return; // no bind groups
@@ -128,27 +133,68 @@ export class Shader {
   static async fromFile(ctx, label, url, desc) {
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`[jgfx] failed to fetch shader '${url}': ${res.status}`);
+      throw new JgfxError(`failed to fetch shader '${url}': ${res.status}`);
     }
     const wgsl = await res.text();
     return new Shader(ctx, label, wgsl, desc);
   }
 
-  async #reportCompilation() {
-    try {
-      const info = await this.module.getCompilationInfo();
-      for (const m of info.messages) {
-        const where = `${this.label}:${m.lineNum}:${m.linePos}`;
-        const text = `[jgfx_shader] ${m.type} at ${where}: ${m.message}`;
-        if (m.type === "error") {
-          this.ok = false;
-          console.error(text);
-        } else {
-          console.warn(text);
-        }
+  /** Log warnings/infos; throw on errors unless mode is 'warn'. */
+  #report(diagnostics, mode) {
+    const errors = [];
+    for (const d of diagnostics) {
+      if (d.severity === "error") {
+        if (mode === "warn") console.error(formatDiagnostic(d, this.label));
+        else errors.push(d);
+      } else if (d.severity === "warning") {
+        console.warn(formatDiagnostic(d, this.label));
+      } else {
+        console.info(formatDiagnostic(d, this.label));
       }
+    }
+    if (errors.length) {
+      throw new JgfxError(
+        `shader '${this.label}': ${errors.length} descriptor/WGSL mismatch(es)\n` +
+          errors.map((d) => d.message).join("\n"),
+        diagnostics,
+      );
+    }
+  }
+
+  /**
+   * Await the browser's WGSL compilation result. Resolves when the module
+   * compiled cleanly (warnings are logged); throws a JgfxError listing every
+   * compile error as label:line:col otherwise.
+   *
+   * Shader creation itself stays synchronous (like cgfx_shader_create), so
+   * call this after creating a shader you don't fully trust yet:
+   *   const shader = ctx.createShader("fx", wgsl, desc);
+   *   await shader.validate();
+   * @returns {Promise<void>}
+   */
+  async validate() {
+    let info;
+    try {
+      info = await this.module.getCompilationInfo();
     } catch {
-      /* getCompilationInfo unsupported — errors still surface via device error scope */
+      return; // getCompilationInfo unsupported — errors surface via device error scope
+    }
+    const compile = info.messages.map((m) => ({
+      severity: m.type, // 'error' | 'warning' | 'info'
+      id: "compile",
+      line: m.lineNum,
+      message: `${m.message} (${this.label}:${m.lineNum}:${m.linePos})`,
+    }));
+    for (const d of compile) {
+      if (d.severity !== "error") console.warn(formatDiagnostic(d, this.label));
+    }
+    const errors = compile.filter((d) => d.severity === "error");
+    if (errors.length) {
+      throw new JgfxError(
+        `shader '${this.label}' failed to compile:\n` +
+          errors.map((d) => `  ${d.message}`).join("\n"),
+        [...this.diagnostics, ...compile],
+      );
     }
   }
 
@@ -193,7 +239,7 @@ export class Shader {
       } else if (e.sampler) {
         resource = e.sampler;
       } else {
-        throw new Error(`[jgfx] bind group entry ${e.binding} has no resource`);
+        throw new JgfxError(`bind group entry ${e.binding} has no resource`);
       }
       return { binding: e.binding, resource };
     });
@@ -205,8 +251,8 @@ export class Shader {
 
   #checkGroup(groupIndex) {
     if (groupIndex >= this.groupLayouts.length) {
-      throw new Error(
-        `[jgfx] bind group index ${groupIndex} out of range ` +
+      throw new JgfxError(
+        `bind group index ${groupIndex} out of range ` +
           `(shader has ${this.groupLayouts.length} groups)`,
       );
     }
@@ -217,6 +263,5 @@ export class Shader {
     this.module = null;
     this.pipelineLayout = null;
     this.groupLayouts = [];
-    this.ok = false;
   }
 }

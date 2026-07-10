@@ -9,6 +9,7 @@
  */
 
 import { Defaults } from "./constants.js";
+import { JgfxError } from "./errors.js";
 
 /**
  * Create a render pipeline.
@@ -33,7 +34,7 @@ import { Defaults } from "./constants.js";
  */
 export function createPipeline(ctx, desc) {
   if (!desc || !desc.shader) {
-    throw new Error("[jgfx] createPipeline: desc.shader is required");
+    throw new JgfxError("createPipeline: desc.shader is required");
   }
   const shader = desc.shader;
 

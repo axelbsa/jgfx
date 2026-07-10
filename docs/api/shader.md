@@ -57,12 +57,21 @@ const shader = ctx.createShader("uniforms", wgsl, {
 });
 ```
 
-!!! note "Compile diagnostics are logged automatically"
-    The constructor kicks off `module.getCompilationInfo()` in the background and
-    logs any WGSL warnings via `console.warn` and errors via `console.error`,
-    each formatted as `[jgfx_shader] <type> at <label>:<line>:<col>: <message>`.
-    On an error it also flips `shader.ok` to `false`. Because this is
-    asynchronous, `ok` may briefly read `true` before diagnostics arrive.
+!!! note "The descriptor is checked against your WGSL"
+    The constructor parses the WGSL and compares it with the `groups` descriptor:
+    missing or mistyped bindings, undersized `minBindingSize` (with the computed
+    struct layout shown field by field), wrong storage-texture formats, and
+    visibility that excludes a referencing stage. Mismatches **throw a
+    `JgfxError`** at the call site by default; pass
+    `Context.create({ validation: "warn" })` to log-and-continue instead, or
+    `"off"` to skip the check. The descriptor stays authoritative — jgfx never
+    generates layouts from the WGSL.
+
+!!! tip "Await `shader.validate()` for compile errors"
+    WGSL *compile* results arrive asynchronously from the browser. Call
+    `await shader.validate()` after creating a shader you are actively editing:
+    it resolves when the module compiled cleanly and throws a `JgfxError`
+    listing every error as `label:line:col` otherwise.
 
 ---
 
@@ -172,7 +181,7 @@ A `Shader` exposes its GPU objects directly:
 | `module` | `GPUShaderModule` | The compiled WGSL module. |
 | `groupLayouts` | `GPUBindGroupLayout[]` | One layout per `@group(N)`. Empty when the shader has no bindings. |
 | `pipelineLayout` | `GPUPipelineLayout \| null` | Built from `groupLayouts`. `null` when no descriptor was provided (automatic layout). |
-| `ok` | `boolean` | `true` unless WGSL compilation reported an error. |
+| `diagnostics` | `object[]` | Validator findings from construction time (empty when `validation: "off"`). |
 
 ---
 
@@ -282,7 +291,7 @@ bind(frame.pass, [cameraGroup, materialGroup]);
 ### shader.destroy
 
 Release the shader's references. The GPU objects are garbage-collected, so this
-mainly clears fields and flips `ok` to `false`.
+mainly clears fields.
 
 ```js
 shader.destroy();

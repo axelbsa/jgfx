@@ -311,16 +311,24 @@ All operate on / return `Float32Array`. Z-to-one depth convention.
 
 ## 5. Error handling strategy
 
-- **Fatal construction errors throw** `Error` (idiomatic JS) — e.g. no `navigator.gpu`,
-  adapter/device request fails, required limit unavailable. This replaces the cgfx
-  pattern of returning a zeroed struct + logging.
-- **`.ok` fields are still present** on wrapper objects (set `true` on success) for 1:1
-  familiarity and cheap truthiness checks, but the primary signal is throw-or-return.
-- **Shader compilation** is validated asynchronously via
-  `module.getCompilationInfo()`; warnings/errors are logged to the console with the
-  label. Creation itself doesn't block on it (matches WebGPU's async validation), and
-  we wrap pipeline/shader creation in `device.pushErrorScope('validation')` /
-  `popErrorScope()` to surface hard failures through `onDeviceError`.
+*(Revised post-port, 2026-07: the original plan kept `.ok` fields "for 1:1 familiarity".
+That proved to be the one parity feature that lies — cgfx's ok is synchronously
+truthful, but the JS one flipped asynchronously after `getCompilationInfo()`, so
+checking it right after creation raced and passed for broken shaders. Removed in favor
+of exceptions; this is a deliberate divergence from cgfx.)*
+
+- **Everything jgfx detects throws `JgfxError`** — no `.ok` fields, no status returns.
+  Fatal construction errors (no `navigator.gpu`, adapter/device failure), fetch
+  failures, out-of-range bind group indices.
+- **WGSL↔descriptor validation** (jgfx/wgsl.js): `createShader` parses the WGSL and
+  checks the hand-written `groups` descriptor against it — sizes (with computed struct
+  layouts), kinds, storage formats, visibility. Mismatches throw at the call site;
+  `Context.create({ validation: 'warn' | 'off' })` relaxes this. The descriptor stays
+  authoritative — layouts are never generated from WGSL (learning WGSL is the point).
+- **Shader compilation** stays async (matches WebGPU): `await shader.validate()`
+  throws a `JgfxError` with `label:line:col` per compile error.
+- **`beginFrame()` still returns `null`** when the surface is unavailable — a
+  per-frame skip condition, not an error (keeps cgfx parity).
 - **`onDeviceError` / `onDeviceLost`** callbacks wired to `device.uncapturederror` and
   `device.lost` (= cgfx's device-error/lost callbacks).
 

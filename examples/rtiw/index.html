@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>jgfx — compute_texture</title>
+  <title>jgfx — raytracing_in_one_weekend</title>
   <style>
     html, body { margin: 0; height: 100%; background: #14141c; overflow: hidden; }
     canvas { display: block; width: 100vw; height: 100vh; }
     #err {
-      position: fixed; inset: 0; display: none; place-items: center;
-      color: #ffb4b4; font: 16px system-ui; text-align: center; padding: 2rem;
+      position: fixed; inset: 0; display: none; place-items: safe center;
+      overflow: auto; background: rgba(20, 20, 28, .95); padding: 2rem;
+      color: #ffb4b4; text-align: left; white-space: pre-wrap; tab-size: 4;
+      font: 13px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
   </style>
 </head>

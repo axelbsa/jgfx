@@ -14,6 +14,7 @@
  */
 
 import { resolveFilter, resolveAddress } from "./constants.js";
+import { JgfxError } from "./errors.js";
 
 const DEPTH_ONLY = new Set(["depth16unorm", "depth24plus", "depth32float"]);
 const isDepthOnly = (f) => DEPTH_ONLY.has(f);
@@ -63,7 +64,7 @@ export class Texture {
   constructor(ctx, desc) {
     this.ctx = ctx;
     if (!desc || !desc.width) {
-      throw new Error("[jgfx] Texture: desc.width is required");
+      throw new JgfxError("Texture: desc.width is required");
     }
 
     const width = desc.width;
@@ -116,7 +117,6 @@ export class Texture {
     this.height = height;
     this.depth = depth;
     this.mipLevels = mipLevels;
-    this.ok = !!(this.texture && this.view);
   }
 
   /**
@@ -151,8 +151,8 @@ export class Texture {
   #upload(data, origin, size) {
     const bpp = BYTES_PER_PIXEL[this.format];
     if (!bpp) {
-      throw new Error(
-        `[jgfx] Texture.write: unsupported format '${this.format}'. ` +
+      throw new JgfxError(
+        `Texture.write: unsupported format '${this.format}'. ` +
           `Use ctx.queue.writeTexture directly.`,
       );
     }
@@ -169,7 +169,6 @@ export class Texture {
     this.view = null;
     this.texture?.destroy();
     this.texture = null;
-    this.ok = false;
   }
 }
 

@@ -49,8 +49,6 @@ export class Buffer {
       }
       ctx.queue.writeBuffer(this.buffer, 0, src);
     }
-
-    this.ok = !!this.buffer;
   }
 
   /** Vertex buffer (VERTEX | COPY_DST) with element `count`. */
@@ -133,8 +131,5 @@ export class Buffer {
   destroy() {
     this.buffer?.destroy();
     this.buffer = null;
-    this.size = 0;
-    this.count = 0;
-    this.ok = false;
   }
 }

@@ -23,7 +23,7 @@ A GPU texture with its default view. Create it with `ctx.createTexture(desc)` or
 
 ### Public fields
 
-All fields are public. Check `ok` before use.
+All fields are public.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -34,7 +34,6 @@ All fields are public. Check `ok` before use.
 | `height` | `number` | Height in pixels. |
 | `depth` | `number` | Depth or array layers (1 for a plain 2D texture). |
 | `mipLevels` | `number` | Number of mip levels. |
-| `ok` | `boolean` | `true` if creation succeeded. |
 
 ---
 
@@ -138,7 +137,7 @@ Release the texture and its view.
 tex.destroy();
 ```
 
-Sets `view` and `texture` to `null` and `ok` to `false`. The `GPUTexture` itself is
+Sets `view` and `texture` to `null`. The `GPUTexture` itself is
 destroyed; the view is dropped for the garbage collector.
 
 ---

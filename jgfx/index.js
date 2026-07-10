@@ -51,6 +51,9 @@ export { Texture, createSampler } from "./texture.js";
 export { ComputePass, createComputePipeline } from "./compute.js";
 // Phase 6:
 export { parseGeometry, loadGeometry, loadMesh } from "./loader.js";
+// Post-port (error model + WGSL validation):
+export { JgfxError } from "./errors.js";
+export * as wgsl from "./wgsl.js";
 
 /**
  * Convenience namespace grouping jgfx statics and enums. Extended alongside the
